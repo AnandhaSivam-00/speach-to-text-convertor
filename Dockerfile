@@ -1,6 +1,6 @@
-FROM node:18
+FROM node:18-slim
 
-# Install FFmpeg
+# Install only what's needed
 RUN apt-get update && \
     apt-get install -y ffmpeg wget unzip && \
     apt-get clean && \
@@ -11,21 +11,21 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies (no native build needed)
+RUN npm ci --only=production
 
-# Copy application code
+# Copy source code
 COPY . .
 
-# Download and extract Vosk model
-RUN mkdir -p models && \
-    cd models && \
-    wget https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip && \
+# Download small English model (~40MB)
+RUN wget -q https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip && \
     unzip vosk-model-small-en-us-0.15.zip && \
+    mv vosk-model-small-en-us-0.15 model && \
     rm vosk-model-small-en-us-0.15.zip
 
-# Expose port
+# Create uploads folder
+RUN mkdir -p uploads
+
 EXPOSE 5000
 
-# Start the application
 CMD ["node", "server.js"]
