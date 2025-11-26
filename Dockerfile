@@ -1,27 +1,25 @@
 FROM node:18
 
-# Install system dependencies
+# Install FFmpeg
 RUN apt-get update && \
-    apt-get install -y ffmpeg wget unzip python3 make g++ && \
+    apt-get install -y ffmpeg wget unzip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy package files first
+# Copy package files
 COPY package*.json ./
 
-# Install Node.js dependencies
-RUN npm ci --only=production || npm install --only=production
+# Install dependencies
+RUN npm install
 
 # Copy application code
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p uploads models
-
 # Download and extract Vosk model
-RUN cd models && \
+RUN mkdir -p models && \
+    cd models && \
     wget https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip && \
     unzip vosk-model-small-en-us-0.15.zip && \
     rm vosk-model-small-en-us-0.15.zip
