@@ -12,9 +12,9 @@
   "dependencies": {
     "express": "^5.1.0",
     "multer": "^2.0.2",
-    "vosk": "^0.3.38"
+    "vosk": "^0.3.45"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "^20.0.0"
   }
 }
